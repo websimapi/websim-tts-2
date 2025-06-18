@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>TTS</title>
+</head>
+<body>
+<button id="b">🔊</button>
+<script>
+addEventListener('DOMContentLoaded',()=>{
+const b=document.getElementById('b'),s=speechSynthesis;let p=0,c=[],i=0;
+const u=()=>b.textContent=p?'⏹️':'🔊',x=()=>{s.speaking&&s.cancel();p=0;u()},g=async()=>{const r=await(await fetch(`/api/v1/projects/${(await websim?.getCurrentProject()).id}`)).json();return r.site?.prompt?.text??r.site?.prompt},t=v=>v.length<=200?[v]:(v.match(/[^.!?\n\r]+[.!?\n\r]*|[^.!?\n\r]+/g)||[]).reduce((a,w)=>{let h=w.trim();while(h.length>200){const d=h.lastIndexOf(' ',200)>-1?h.lastIndexOf(' ',200):200;a.push(h.substring(0,d));h=h.substring(d).trim()}h&&a.push(h);return a},[]),n=()=>{if(!p||i>=c.length)return x();const o=new SpeechSynthesisUtterance(c[i]);Object.assign(o,{rate:.9,pitch:1,volume:.8,onend:()=>{i++;n()},onerror:x});s.speak(o)},k=v=>{if(!v?.trim())return;x();p=1;u();c=t(v);i=0;n()};
+b.onclick=async()=>p?x():k(await g().catch(e=>{console.error(e);x()}));
+const r=()=>{s.paused&&s.resume();removeEventListener('click',r,!0)};
+addEventListener('click',r,!0);addEventListener('visibilitychange',()=>document.hidden&&p&&x());u()});
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
+
